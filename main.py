@@ -43,7 +43,7 @@ def mystery_algorithm(L: List[int]) -> int:
         T[i] = L[i - 1]
 
     # Referencing the position of the values in T
-    print("Filling the C table which allows to know the position of the values in the T table")
+    print("Filling the P table which allows to know the position of the values in the T table")
     for i in range(0, n + 2):
         P[abs(T[i])] = i
 
@@ -54,7 +54,7 @@ def mystery_algorithm(L: List[int]) -> int:
     #################################
     '''
     Takes the non assigned point in C, depending if the value is even or odd we follow either an edge of reality or an edge of desir
-    Les divisions par deux pour correspondre les index de C avec les index de P
+    Les divisions par deux permettent faire correspondre les index de C avec les index de P
     Si on revient sur une case déjà initialisé on revient au point de départ
     '''
     while np.isnan(C).any():
@@ -66,10 +66,9 @@ def mystery_algorithm(L: List[int]) -> int:
             i = i + 1 if (i % 2) == 0 else i - 1  # Follows an edge of reality, either left (if the value is odds) or right (if the value is even)
             C[i] = cpt  # Tags the index with the current cycle
             # Follows the edge of desir (determines the value of j which is the next index of the edge of desir)
-            if (i % 2) == 0:
+            if (i % 2) == 0:  # Allows to know if we're are at the beginning or end of a point
                 k = abs(T[i // 2])  # The absolut value allows to search in the P table the position of T
-                if T[
-                    i // 2] > 0:  # Allows to know which to next number we are, depending if it's even or odds we're either at the beginning or the end
+                if T[i // 2] > 0:  # Manages the logic between positive and negative number (inversed points)
                     j = 2 * P[k + 1] - 1 if T[P[k + 1]] >= 0 else 2 * P[k + 1]
                 else:
                     j = 2 * P[k - 1] if T[P[k - 1]] >= 0 else 2 * P[k - 1] - 1  # Permet d'obtenir la fin d'un élément
@@ -183,6 +182,19 @@ def draw_breakpoint_graph(T: np.ndarray, P: np.ndarray, C: np.ndarray) -> list:
 
 
 def draw_overlap_graph(desired_edges, P: np.ndarray) -> None:
+    """
+    Creates the graph of breakpoints.
+    The dírect edges are represented in red while the indirect of a cycle are represented in black
+
+    Parameters
+    ----------
+    desired_edges: A list holding tuples of the desired edges
+    P: A table giving the ordered positions of the values
+
+    Returns
+    -------
+    None
+    """
     g1 = nx.Graph()
     #############################
     #        Adding nodes       #
@@ -217,10 +229,7 @@ def draw_overlap_graph(desired_edges, P: np.ndarray) -> None:
     plt.box(False)
     plt.show()
 
-
-
 if __name__ == '__main__':
     L: List[int] = [-2, -1, 3]
     # L: List[int] = [3, -4, -2, -1]
     cpt = mystery_algorithm(L)
-    print(cpt)
